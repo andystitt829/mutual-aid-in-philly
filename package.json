@@ -59,7 +59,9 @@
     "tailwindcss": "^4.1.7"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.56.0",
     "@tailwindcss/vite": "^4.1.7",
-    "accessible-astro-components": "^4.1.2"
+    "accessible-astro-components": "^4.1.2",
+    "astro-leaflet": "^1.8.0"
   }
 }

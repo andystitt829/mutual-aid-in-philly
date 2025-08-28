@@ -11,6 +11,9 @@ export default defineConfig({
   site: 'https://accessible-astro-starter.incluud.dev',
   integrations: [mdx(), icon(), compress()],
   vite: {
+    optimizeDeps: {
+      include: ['leaflet'],
+    },
     css: {
       preprocessorOptions: {
         scss: {
