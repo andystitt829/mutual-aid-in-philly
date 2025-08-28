@@ -1,0 +1,34 @@
+---
+import DefaultLayout from '@layouts/DefaultLayout.astro';
+import { Leaflet, Marker, Popup } from "astro-leaflet";
+import { supabase } from 'src/lib/supabase';
+
+const { data, error } = await supabase
+  .from('sites')
+  .select()
+
+if (error) {
+  console.error(error);
+  throw error;
+}
+
+---
+
+<DefaultLayout title="Test Map">
+    <div class="container">
+        <h1>Map View</h1>
+<Leaflet
+  id="map-quick-start"
+  style=""
+  options={{ center: [39.9925, -75.2411], zoom: 11, tileByName: 'Google&type=hybrid' }}
+>
+    {
+      data.map((item) => (
+        <Marker latlng={[item.site_lat, item.site_long]} options={{alt: item.site_name}}>
+          <Popup content=`<b>${item.site_name}</b><br>${item.site_description}<br>${item.site_date_time}<br>${item.site_address}` />
+        </Marker>
+      ))
+    }
+</Leaflet>
+    </div>
+</DefaultLayout>

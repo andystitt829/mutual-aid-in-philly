@@ -1,0 +1,27 @@
+---
+import DefaultLayout from '@layouts/DefaultLayout.astro';
+import { supabase } from 'src/lib/supabase';
+
+const { data, error } = await supabase
+  .from('sites')
+  .select()
+
+if (error) {
+  console.error(error);
+  throw error;
+}
+
+---
+
+<DefaultLayout title="List View">
+    <div class="container">
+        <h1>List View</h1>
+        <ul>
+    {
+      data.map((item) => (
+        <li>{item.site_name}<br>{item.site_description}<br>{item.site_date_time}<br>{item.site_address}</li>
+      ))
+    }
+    </ul>
+    </div>
+</DefaultLayout>
