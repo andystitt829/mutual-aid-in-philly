@@ -4,12 +4,13 @@ import compress from 'astro-compress'
 import icon from 'astro-icon'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath } from 'url'
+import pagefind from 'astro-pagefind'
 
 // https://astro.build/config
 export default defineConfig({
   compressHTML: true,
   site: 'https://accessible-astro-starter.incluud.dev',
-  integrations: [mdx(), icon(), compress()],
+  integrations: [mdx(), icon(), compress(), pagefind()],
   vite: {
     optimizeDeps: {
       include: ['leaflet'],
