@@ -6,13 +6,20 @@ import DefaultLayout from '@layouts/DefaultLayout.astro';
     <div class="container mb-32">
         <h1 class="mb-10">Contact</h1>
         <p class="text-2xl mb-15">Use the list and search bar below to find mutual aid near you. You can also click on the top row of each table to sort the information in ascending or descending order.</p>
-        <form>
-            <label for="name" class="font-bold">Name (leave blank if you wish to remain anonymous)</label>
-            <input type="text" id="name" />
-            <label for="email" class="font-bold">Email Address (if you wish to be contacted)</label>
-            <input type="text" id="email" />
-            <label for="comment" class="font-bold">Leave your feedback (required field)</label>
-            <textarea id="comment" required />
+        <form class="text-2xl" netlify>
+            <div class="flex flex-col gap-2 mb-8">
+                <label for="name" class="font-bold">Name (leave blank if you wish to remain anonymous)</label>
+                <input type="text" id="name" />
+            </div>
+            <div class="flex flex-col gap-2 mb-8">
+                <label for="email" class="font-bold">Email Address (if you wish to be contacted)</label>
+                <input type="text" id="email" />
+            </div>
+            <div class="flex flex-col gap-2 mb-8">
+                <label for="comment" class="font-bold">Leave your feedback (required field)</label>
+                <textarea id="comment" required />
+            </div>
+            <input type="submit" value="Submit" class="p-4">
         </form>
     </div>
 </DefaultLayout>
