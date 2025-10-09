@@ -20,7 +20,8 @@ if (error) {
         <h1 class="mb-10">List View</h1>
         <p class="text-2xl mb-15">Use the list and search bar below to find mutual aid near you. You can also click on each table column heading to sort the information in that column in ascending or descending order.</p>
         <Search id="search" className="mt-15" uiOptions={{ showImages: false }} />
-        <table data-pagefind-body id="listView" class="table-auto mt-10 overflow-x-auto">
+        <div class="overflow-x-auto">
+        <table data-pagefind-body id="listView" class="table-auto mt-10">
             <thead>
                 <th scope="col" class="border border-gray-500">Name</th>
                 <th scope="col" class="border border-gray-500">Description</th>
@@ -42,6 +43,7 @@ if (error) {
                 }
             </tbody>
         </table>
+        </div>
     </div>
 </DefaultLayout>
 
