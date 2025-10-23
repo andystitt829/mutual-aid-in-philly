@@ -9,7 +9,7 @@ import pagefind from 'astro-pagefind'
 // https://astro.build/config
 export default defineConfig({
   compressHTML: true,
-  site: 'https://accessible-astro-starter.incluud.dev',
+  site: 'https://mutual-aid-in-philly.netlify.app',
   integrations: [mdx(), icon(), compress(), pagefind()],
   vite: {
     optimizeDeps: {

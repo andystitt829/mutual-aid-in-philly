@@ -1,0 +1,59 @@
+---
+import DefaultLayout from '@layouts/DefaultLayout.astro';
+import { supabase } from 'src/lib/supabase';
+import Search from "astro-pagefind/components/Search";
+
+const { data, error } = await supabase
+  .from('sites')
+  .select()
+  .eq('category', 'food')
+
+if (error) {
+  console.error(error);
+  throw error;
+}
+---
+
+<script is:inline src="/js/tablesort.min.js"></script>
+
+<DefaultLayout title="Food List View">
+    <div class="container mb-32">
+        <h1 class="mb-10">Food List View</h1>
+        <p class="text-2xl mb-15">Use the list and search bar below to find food near you. You can also click on each table column heading to sort the information in that column in ascending or descending order.</p>
+        <Search id="search" className="mt-15" uiOptions={{ showImages: false }} />
+        <div class="overflow-x-auto">
+        <table data-pagefind-body id="listView" class="table-auto mt-10">
+            <thead>
+                <th scope="col" class="border border-gray-500">Name</th>
+                <th scope="col" class="border border-gray-500">Description</th>
+                <th scope="col" class="border border-gray-500">Days and Times</th>
+                <th scope="col" class="border border-gray-500">Address</th>
+                <th scope="col" class="border border-gray-500">Zip Code</th>
+            </thead>
+            <tbody>
+                {
+                data.map((item) => (
+                    <tr>
+                        <td class="border border-gray-500 p-3">{item.site_name}</td>
+                        <td class="border border-gray-500 p-3">{item.site_description}</td>
+                        <td class="border border-gray-500 p-3">{item.site_date_time}</td>
+                        <td class="border border-gray-500 p-3">{item.site_address}</td>
+                        <td class="border border-gray-500 p-3">{item.site_zip}</td>
+                    </tr>
+                ))
+                }
+            </tbody>
+        </table>
+        </div>
+    </div>
+</DefaultLayout>
+
+<script>
+  new Tablesort(document.getElementById('listView'));
+</script>
+
+<style>
+    :root {
+        --pagefind-ui-border: #adb5bd;
+    }
+</style>
