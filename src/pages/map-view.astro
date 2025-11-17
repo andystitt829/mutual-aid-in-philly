@@ -1,16 +1,10 @@
 ---
 import DefaultLayout from '@layouts/DefaultLayout.astro';
 import { Leaflet, Marker, Popup } from "astro-leaflet";
-import { supabase } from 'src/lib/supabase';
+import { getCollection } from "astro:content";
 
-const { data, error } = await supabase
-  .from('sites')
-  .select()
+const sites = await getCollection("sites");
 
-if (error) {
-  console.error(error);
-  throw error;
-}
 ---
 
 <DefaultLayout title="Map View">
@@ -23,9 +17,9 @@ if (error) {
   options={{ center: [39.9925, -75.2411], zoom: 11 }}
 >
     {
-      data.map((item) => (
-        <Marker latlng={[item.site_lat, item.site_long]} options={{alt: item.site_name}}>
-          <Popup content=`<h4 class="text-lg/5">${item.site_name}</h4><p class="mt-3!">${item.site_description}<br>${item.site_date_time}<br>${item.site_address}</p>` />
+      sites.map((site) => (
+        <Marker latlng={[site.data.Latitude, site.data.Longitude]} options={{alt: site.data.Name}}>
+          <Popup content=`<h4 class="text-lg/5">${site.data.Name}</h4><p class="mt-3!">${site.data.Description}<br>${site.data['Days and Times']}<br>${site.data.Address}</p>` />
         </Marker>
       ))
     }

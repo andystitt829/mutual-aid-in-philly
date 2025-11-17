@@ -1,8 +1,15 @@
 ---
-import DefaultLayout from '@layouts/DefaultLayout.astro';
+import { getCollection } from "astro:content";
+import DefaultLayout from "@layouts/DefaultLayout.astro";
+
+const sites = await getCollection("sites");
 ---
 
-<DefaultLayout title="Airtable Test">
-    <h1>Airtable Test</h1>
-    <p>We are testing to see if this branching thing works.</p>
+<DefaultLayout title="Sample">
+  <h1>Testing out this here thang</h1>
+  {sites.map((site) => (
+    <p>{site.data.Name}</p>
+    <p>{site.data.Address}</p>
+    <p>{site.data["Days and Times"]}</p>
+  ))}
 </DefaultLayout>
