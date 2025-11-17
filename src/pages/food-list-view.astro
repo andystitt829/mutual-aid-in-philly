@@ -1,25 +1,17 @@
 ---
 import DefaultLayout from '@layouts/DefaultLayout.astro';
-import { supabase } from 'src/lib/supabase';
 import Search from "astro-pagefind/components/Search";
+import { getCollection } from "astro:content";
 
-const { data, error } = await supabase
-  .from('sites')
-  .select()
-  .eq('category', 'food')
-
-if (error) {
-  console.error(error);
-  throw error;
-}
+const sites = await getCollection("sites");
 ---
 
 <script is:inline src="/js/tablesort.min.js"></script>
 
-<DefaultLayout title="Food List View">
+<DefaultLayout title="List View">
     <div class="container mb-32">
-        <h1 class="mb-10">Food List View</h1>
-        <p class="text-2xl mb-15">Use the list and search bar below to find food near you. You can also click on each table column heading to sort the information in that column in ascending or descending order.</p>
+        <h1 class="mb-10">List View</h1>
+        <p class="text-2xl mb-15">Use the list and search bar below to find mutual aid near you. You can also click on each table column heading to sort the information in that column in ascending or descending order.</p>
         <Search id="search" className="mt-15" uiOptions={{ showImages: false }} />
         <div class="overflow-x-auto">
         <table data-pagefind-body id="listView" class="table-auto mt-10">
@@ -32,13 +24,13 @@ if (error) {
             </thead>
             <tbody>
                 {
-                data.map((item) => (
+                sites.map((site) => (
                     <tr>
-                        <td class="border border-gray-500 p-3">{item.site_name}</td>
-                        <td class="border border-gray-500 p-3">{item.site_description}</td>
-                        <td class="border border-gray-500 p-3">{item.site_date_time}</td>
-                        <td class="border border-gray-500 p-3">{item.site_address}</td>
-                        <td class="border border-gray-500 p-3">{item.site_zip}</td>
+                        <td class="border border-gray-500 p-3">{site.data.Name}</td>
+                        <td class="border border-gray-500 p-3">{site.data.Description}</td>
+                        <td class="border border-gray-500 p-3">{site.data['Days and Times']}</td>
+                        <td class="border border-gray-500 p-3">{site.data.Address}</td>
+                        <td class="border border-gray-500 p-3">{site.data.ZIP}</td>
                     </tr>
                 ))
                 }
