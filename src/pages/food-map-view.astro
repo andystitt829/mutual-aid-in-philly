@@ -3,8 +3,9 @@ import DefaultLayout from '@layouts/DefaultLayout.astro';
 import { Leaflet, Marker, Popup } from "astro-leaflet";
 import { getCollection } from "astro:content";
 
-const sites = await getCollection("sites");
-
+const sites = await getCollection("sites", ({ data }) => {
+  return data.Active == true && data.Food == true;
+});
 ---
 
 <DefaultLayout title="Map View">

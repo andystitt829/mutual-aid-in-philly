@@ -3,7 +3,9 @@ import DefaultLayout from '@layouts/DefaultLayout.astro';
 import Search from "astro-pagefind/components/Search";
 import { getCollection } from "astro:content";
 
-const sites = await getCollection("sites");
+const sites = await getCollection("sites", ({ data }) => {
+  return data.Active == true;
+});
 ---
 
 <script is:inline src="/js/tablesort.min.js"></script>
