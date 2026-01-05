@@ -4,6 +4,9 @@
  *
  * @description A component that displays the footer of the website
  */
+
+import { Link } from 'accessible-astro-components'
+
 const currentYear = new Date().getFullYear()
 ---
 
@@ -14,18 +17,18 @@ const currentYear = new Date().getFullYear()
       <div class="flex flex-col gap-4">
         <h3 class="text-2xl font-bold">Navigation</h3>
         <ul class="flex flex-col gap-2">
-          <li><a href="/">Home</a></li>
-          <li><a href="/map-view">Map View</a></li>
-          <li><a href="/list-view">List View</a></li>
-          <li><a href="/contact">Contact</a></li>
-          <li><a href="/accessibility-statement">Accessibility Statement</a></li>
+          <li><Link href="/">Home</Link></li>
+          <li><Link href="/map-view">Map View</Link></li>
+          <li><Link href="/list-view">List View</Link></li>
+          <li><Link href="/contact">Contact</Link></li>
+          <li><Link href="/accessibility-statement">Accessibility Statement</Link></li>
         </ul>
       </div>
       <div class="flex flex-col gap-4">
         <h3 class="text-2xl font-bold">Other Resources</h3>
         <ul class="flex flex-col gap-2">
-          <li><a href="https://www.sharefoodprogram.org/find-food/">Share Food Program food finder</a></li>
-          <li><a href="https://www.phila.gov/food/">City of Philadelphia food and meal finder</a></li>
+          <li><Link href="https://www.sharefoodprogram.org/find-food/">Share Food Program food finder</Link></li>
+          <li><Link href="https://www.phila.gov/food/">City of Philadelphia food and meal finder</Link></li>
         </ul>
       </div>
     </div>
@@ -36,8 +39,8 @@ const currentYear = new Date().getFullYear()
         &copy; {currentYear} - Mutual Aid in Philly
       </p>
       <p>
-        Made with ❤️ using the <a
-          href="https://accessible-astro-starter.incluud.dev/">Accessible Starter for Astro</a
+        Made with ❤️ using the <Link
+          href="https://accessible-astro-starter.incluud.dev/">Accessible Starter for Astro</Link
         >.
       </p>
     </div>

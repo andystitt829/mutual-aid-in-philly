@@ -4,14 +4,14 @@ import Search from "astro-pagefind/components/Search";
 import { getCollection } from "astro:content";
 
 const sites = await getCollection("sites", ({ data }) => {
-  return data.Active == true;
+  return data.Active == true && data.Region == "Northeast";
 });
 ---
 
 <DefaultLayout title="List View">
     <div class="container mb-32">
-        <h1 class="mb-10">List View</h1>
-        <p class="text-2xl mb-15">Use the list and search bar below to find mutual aid near you.</p>
+        <h1 class="mb-10">List View - Northeast Philly</h1>
+        <p class="text-2xl mb-15">Use the list and search bar below to find mutual aid in Northeast Philly.</p>
         <Search id="search" className="mt-15" uiOptions={{ showImages: false }} />
         <div class="overflow-x-auto">
         <table data-pagefind-body id="listView" class="table-auto mt-10">

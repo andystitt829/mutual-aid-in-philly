@@ -1,6 +1,6 @@
 ---
 import Navigation from '../components/Navigation.astro'
-import { DarkMode, SkipLink } from 'accessible-astro-components'
+import { DarkMode, SkipLink, Link } from 'accessible-astro-components'
 import { Icon } from 'astro-icon/components'
 
 /**
@@ -14,16 +14,45 @@ import { Icon } from 'astro-icon/components'
   <SkipLink />
   <Navigation>
     <li class="menu-item">
-      <a href="/">Home</a>
+      <Link href="/">Home</Link>
     </li>
     <li class="menu-item">
-      <a href="/map-view/">Map View</a>
+      <Link href="/map-view/">Map View</Link>
+    </li>
+    <li class="menu-item has-dropdown">
+      <button aria-haspopup="true" aria-expanded="false">
+        List View by Neighborhood
+        <Icon aria-hidden="true" name="lucide:chevron-down" size="32" />
+      </button>
+      <ul class="dropdown-menu">
+        <li class="submenu-item">
+          <Link href="/list-view-center-city/">Center City</Link>
+        </li>
+        <li class="submenu-item">
+          <Link href="/list-view-north/">North Philly</Link>
+        </li>
+        <li class="submenu-item">
+          <Link href="/list-view-northeast/">Northeast Philly</Link>
+        </li>
+        <li class="submenu-item">
+          <Link href="/list-view-northwest/">Northwest Philly</Link>
+        </li>
+        <li class="submenu-item">
+          <Link href="/list-view-south/">South Philly</Link>
+        </li>
+        <li class="submenu-item">
+          <Link href="/list-view-southwest/">Southwest Philly</Link>
+        </li>
+        <li class="submenu-item">
+          <Link href="/list-view-west/">West Philly</Link>
+        </li>
+        <li class="submenu-item">
+          <Link href="/list-view/">View full list</Link>
+        </li>
+      </ul>
     </li>
     <li class="menu-item">
-      <a href="/list-view/">List View</a>
-    </li>
-    <li class="menu-item">
-      <a href="/contact/">Contact</a>
+      <Link href="/contact/">Contact</Link>
     </li>
     <li class="menu-item type-icon animate-rotate">
       <DarkMode>
