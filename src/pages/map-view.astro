@@ -1,6 +1,6 @@
 ---
 import DefaultLayout from '@layouts/DefaultLayout.astro';
-import { Leaflet, Marker, Popup, CreateLeafletIcon } from "astro-leaflet";
+import { Leaflet, Marker, Popup, CreateLeafletIcon, Control } from "astro-leaflet";
 import { getCollection } from "astro:content";
 
 const sites = await getCollection("sites", ({ data }) => {
@@ -45,57 +45,61 @@ const iconType = (resourceType) => {
                     ${site.data['Days and Times']}<br><br>
                     Description: ${site.data.Description}<br>
                     Types of resources: ${site.data['All Resources (New)']}<br>
-                  </p>
-                `/>
+                    Food: 
+                  </p>`
+                />
               </Marker>
             ))
           }
+          <Control options={{position: 'bottomright'}}>
+            <div class="info legend">
+              <h2 class="text-lg">Legend</h2>
+              <div class="map-legend-item">
+                <p>
+                <img class='legend-icon' src="/media/distro.svg" alt="Distro icon">
+                Food distributions (Distros)
+                </p>
+              </div>
+              <div class="map-legend-item">
+                <p>
+                <img class='legend-icon' src="/media/fridge.svg" alt="Fridge icon">
+                Community fridges
+                </p>
+              </div>
+              <div class="map-legend-item">
+                <p>
+                  <img class='legend-icon' src="/media/freetable.svg" alt="Free table icon">
+                  Free tables
+                </p>
+              </div>
+              <div class="map-legend-item">
+                <p>
+                  <img class='legend-icon' src="/media/meals.svg" alt="Meals icon">
+                  Meals
+                </p>
+              </div>
+              <div class="map-legend-item">
+                <p>
+                  <img class='legend-icon' src="/media/other.svg" alt="Non-food icon">
+                  Non-food resources
+                </p>
+              </div>
+            </div>
+          </Control>
         </Leaflet>
-        <h2 class="mt-10 mb-5">Legend</h2>
-        <div class="map-legend">
-          <div class="map-legend-item">
-            <p>
-            <img class='legend-icon' src="/media/distro.svg" alt="Distro icon">
-            Food distributions (Distros)
-            </p>
-          </div>
-          <div class="map-legend-item">
-            <p>
-            <img class='legend-icon' src="/media/fridge.svg" alt="Fridge icon">
-            Community fridges
-            </p>
-          </div>
-          <div class="map-legend-item">
-            <p>
-              <img class='legend-icon' src="/media/freetable.svg" alt="Free table icon">
-              Free tables
-            </p>
-          </div>
-          <div class="map-legend-item">
-            <p>
-              <img class='legend-icon' src="/media/meals.svg" alt="Meals icon">
-              Meals
-            </p>
-          </div>
-          <div class="map-legend-item">
-            <p>
-              <img class='legend-icon' src="/media/other.svg" alt="Non-food icon">
-              Non-food resources
-            </p>
-          </div>
-        </div>
-        <h2 class="mt-10 mb-5">Downloadable maps</h2>
+        <h2 class="mt-5 mb-5">Downloadable maps</h2>
         <p class="text-xl">View static versions of food resources for:</p>
         <ul>
-          <li><a href='/maps/South.pdf'>South Philly and Center City</a></li>
           <li><a href='/maps/North.pdf'>North Philly</a></li>
+          <li><a href='/maps/South.pdf'>South Philly and Center City</a></li>
           <li><a href='/maps/West.pdf'>West Philly</a></li>
         </ul>
         <p class="text-xl">(last updated January 2nd, 2026)</p>
+      </div>
 <style is:global>
   .legend-icon {
-    width: 30px;
-    height: 30px;
+    width: 2em;
+    height: 2em;
     display: inline;
   }
 	.leaflet-icon-distro {
@@ -113,6 +117,14 @@ const iconType = (resourceType) => {
   .leaflet-icon-other {
     background-image: url("/media/other.svg");
   }
+  .legend {
+    background-color: #ffffff;
+    opacity: 0.7;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  .legend:hover {
+    opacity: 1;
+  }
 </style>
-    </div>
 </DefaultLayout>
