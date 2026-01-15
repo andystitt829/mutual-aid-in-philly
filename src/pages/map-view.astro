@@ -1,6 +1,6 @@
 ---
 import DefaultLayout from '@layouts/DefaultLayout.astro';
-import { Leaflet, Marker, Popup, CreateLeafletIcon, Control } from "astro-leaflet";
+import { Leaflet, Marker, Popup, CreateLeafletIcon, Control, ControlLayer, LayerGroup, Overlay} from "astro-leaflet";
 import { getCollection } from "astro:content";
 
 const sites = await getCollection("sites", ({ data }) => {
@@ -19,6 +19,35 @@ const iconType = (resourceType) => {
     return "other"
   }
 };
+
+const layers = [
+  {
+    display: `<img class='legend-icon' src="/media/distro.svg" alt="Distro icon">Food distributions (Distros)`,
+    name: "Distros",
+    data: sites.filter(site => site.data['Primary Resource'] == "Distro")
+  },
+  {
+    display: `<img class='legend-icon' src="/media/fridge.svg" alt="Fridge icon">Community fridges`,
+    name: "Fridges",
+    data: sites.filter(site => site.data['Primary Resource'] == "Fridge")
+  },
+  {
+    display: `<img class='legend-icon' src="/media/freetable.svg" alt="Free table icon">Free tables`,
+    name: "Free tables",
+    data: sites.filter(site => site.data['Primary Resource'] == "Free table")
+  },
+  {
+    display: `<img class='legend-icon' src="/media/meals.svg" alt="Meals icon">Meals`,
+    name: "Meals",
+    data: sites.filter(site => site.data['Primary Resource'] == "Meals")
+  },
+  {
+    display: `<img class='legend-icon' src="/media/other.svg" alt="Non-food icon">Non-food`,
+    name: "Non-food",
+    data: sites.filter(site => !site.data['Food'])
+  }
+];
+
 ---
 
 <DefaultLayout title="Map View">
@@ -35,22 +64,30 @@ const iconType = (resourceType) => {
           style=""
           options={{ center: [39.9925, -75.2411], zoom: 11 }}
         >
-          {
-            sites.map((site) => (
-              <Marker latlng={[site.data.Latitude, site.data.Longitude]} options={{alt: site.data.Name}} astroIconName={iconType(site.data['Primary Resource'])}>
-                <Popup content=`
-                  <h4 class="text-lg/5">${site.data.Name}</h4>
-                  <p class="mt-3!">
-                    <a href=${'https://www.google.com/maps/search/?api=1&query='+String(site.data.Latitude)+"+"+String(site.data.Longitude)}>${site.data.Address}</a><br>
-                    ${site.data['Days and Times']}<br><br>
-                    Description: ${site.data.Description}<br>
-                    Types of resources: ${site.data['All Resources (New)']}<br>
-                    Food: 
-                  </p>`
-                />
-              </Marker>
+        <ControlLayer>
+            {
+              layers.map(layer => (
+                <LayerGroup>
+                  <Overlay name={layer.name}/>
+
+                  {layer.data.map(site => (
+                  <Marker latlng={[site.data.Latitude, site.data.Longitude]} options={{alt: site.data.Name}} astroIconName={iconType(site.data['Primary Resource'])}>
+                    <Popup content=`
+                      <h4 class="text-lg/5">${site.data.Name}</h4>
+                      <p class="mt-3!">
+                        <a href=${'https://www.google.com/maps/search/?api=1&query='+String(site.data.Latitude)+"+"+String(site.data.Longitude)}>${site.data.Address}</a><br>
+                        ${site.data['Days and Times']}<br><br>
+                        Description: ${site.data.Description}<br>
+                        Types of resources: ${site.data['All Resources (New)']}<br>
+                        Food: 
+                      </p>`
+                    />
+                  </Marker>
+                  ))}
+                </LayerGroup>
             ))
           }
+        </ControlLayer>
           <Control options={{position: 'bottomright'}}>
             <div class="info legend">
               <h2 class="text-lg">Legend</h2>
