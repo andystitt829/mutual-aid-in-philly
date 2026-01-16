@@ -43,8 +43,10 @@ const layers = [
 function popupContent(site) {
 return `<h4 class="text-lg/5">${site.data.Name}</h4>
 <p class="mt-3!">
-  <a href=${'https://www.google.com/maps/search/?api=1&query='+String(site.data.Latitude)+"+"+String(site.data.Longitude)}>${site.data.Address}</a><br>
-  ${site.data['Days and Times']}<br><br>
+  ${site.data['Days and Times']}<br>
+  ${site.data.Address}<br>
+  <a href=${'https://www.google.com/maps/search/?api=1&query='+String(site.data.Latitude)+"+"+String(site.data.Longitude)}>View <span class='sr-only'>${site.data.Address} </span>on Google Maps</a><br><br>
+
   Description: ${site.data.Description}<br>
   Types of resources: ${site.data['All Resources (New)'].join(", ")}<br>
 </p>`
