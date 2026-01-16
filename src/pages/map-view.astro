@@ -7,9 +7,6 @@ const sites = await getCollection("sites", ({ data }) => {
   return data.Active == true;
 });
 
-const resourceTypesSet = new Set(sites.map(site => site.data['Primary Resource']));
-const resourceTypes = [...resourceTypesSet];
-
 const iconType = (resourceType) => {
   if (resourceType == "Free table") {
     return "free-table"
@@ -22,31 +19,36 @@ const iconType = (resourceType) => {
 
 const layers = [
   {
-    display: `<img class='legend-icon' src="/media/distro.svg" alt="Distro icon">Food distributions (Distros)`,
     name: "Distros",
     data: sites.filter(site => site.data['Primary Resource'] == "Distro")
   },
   {
-    display: `<img class='legend-icon' src="/media/fridge.svg" alt="Fridge icon">Community fridges`,
     name: "Fridges",
     data: sites.filter(site => site.data['Primary Resource'] == "Fridge")
   },
   {
-    display: `<img class='legend-icon' src="/media/freetable.svg" alt="Free table icon">Free tables`,
     name: "Free tables",
     data: sites.filter(site => site.data['Primary Resource'] == "Free table")
   },
   {
-    display: `<img class='legend-icon' src="/media/meals.svg" alt="Meals icon">Meals`,
     name: "Meals",
     data: sites.filter(site => site.data['Primary Resource'] == "Meals")
   },
   {
-    display: `<img class='legend-icon' src="/media/other.svg" alt="Non-food icon">Non-food`,
     name: "Non-food",
     data: sites.filter(site => !site.data['Food'])
   }
 ];
+
+function popupContent(site) {
+return `<h4 class="text-lg/5">${site.data.Name}</h4>
+<p class="mt-3!">
+  <a href=${'https://www.google.com/maps/search/?api=1&query='+String(site.data.Latitude)+"+"+String(site.data.Longitude)}>${site.data.Address}</a><br>
+  ${site.data['Days and Times']}<br><br>
+  Description: ${site.data.Description}<br>
+  Types of resources: ${site.data['All Resources (New)'].join(", ")}<br>
+</p>`
+}
 
 ---
 
@@ -61,7 +63,6 @@ const layers = [
         <CreateLeafletIcon name="other" options={{className: "leaflet-icon-other", iconSize: [20,20]}} />
         <Leaflet
           id="map-quick-start"
-          style=""
           options={{ center: [39.9925, -75.2411], zoom: 11 }}
         >
         <ControlLayer>
@@ -72,16 +73,7 @@ const layers = [
 
                   {layer.data.map(site => (
                   <Marker latlng={[site.data.Latitude, site.data.Longitude]} options={{alt: site.data.Name}} astroIconName={iconType(site.data['Primary Resource'])}>
-                    <Popup content=`
-                      <h4 class="text-lg/5">${site.data.Name}</h4>
-                      <p class="mt-3!">
-                        <a href=${'https://www.google.com/maps/search/?api=1&query='+String(site.data.Latitude)+"+"+String(site.data.Longitude)}>${site.data.Address}</a><br>
-                        ${site.data['Days and Times']}<br><br>
-                        Description: ${site.data.Description}<br>
-                        Types of resources: ${site.data['All Resources (New)']}<br>
-                        Food: 
-                      </p>`
-                    />
+                    <Popup content={popupContent(site)}/>
                   </Marker>
                   ))}
                 </LayerGroup>
@@ -90,48 +82,26 @@ const layers = [
         </ControlLayer>
           <Control options={{position: 'bottomright'}}>
             <div class="info legend">
-              <h2 class="text-lg">Legend</h2>
-              <div class="map-legend-item">
-                <p>
-                <img class='legend-icon' src="/media/distro.svg" alt="Distro icon">
-                Food distributions (Distros)
-                </p>
-              </div>
-              <div class="map-legend-item">
-                <p>
-                <img class='legend-icon' src="/media/fridge.svg" alt="Fridge icon">
-                Community fridges
-                </p>
-              </div>
-              <div class="map-legend-item">
-                <p>
-                  <img class='legend-icon' src="/media/freetable.svg" alt="Free table icon">
-                  Free tables
-                </p>
-              </div>
-              <div class="map-legend-item">
-                <p>
-                  <img class='legend-icon' src="/media/meals.svg" alt="Meals icon">
-                  Meals
-                </p>
-              </div>
-              <div class="map-legend-item">
-                <p>
-                  <img class='legend-icon' src="/media/other.svg" alt="Non-food icon">
-                  Non-food resources
-                </p>
-              </div>
+              <details>
+                <summary><h2 class="text-lg inline">Legend</h2></summary>
+                <ul class="map-legend-contents list-none">
+                  <li class="map-legend-item"><img class='legend-icon' src="/media/distro.svg" alt="Distro icon">Food distributions (Distros)</li>
+                  <li class="map-legend-item"><img class='legend-icon' src="/media/fridge.svg" alt="Fridge icon">Community fridges</li>
+                  <li class="map-legend-item"><img class='legend-icon' src="/media/freetable.svg" alt="Free table icon">Free tables</li>
+                  <li class="map-legend-item"><img class='legend-icon' src="/media/meals.svg" alt="Meals icon">Meals</li>
+                  <li class="map-legend-item"><img class='legend-icon' src="/media/other.svg" alt="Non-food icon">Non-food resources</li>
+                </ul>
+              </details>
             </div>
           </Control>
         </Leaflet>
-        <h2 class="mt-5 mb-5">Downloadable maps</h2>
+        <h2 class="mt-5 mb-5">Printable maps (last update: Jan. 2nd, 2026)</h2>
         <p class="text-xl">View static versions of food resources for:</p>
         <ul>
           <li><a href='/maps/North.pdf'>North Philly</a></li>
           <li><a href='/maps/South.pdf'>South Philly and Center City</a></li>
           <li><a href='/maps/West.pdf'>West Philly</a></li>
         </ul>
-        <p class="text-xl">(last updated January 2nd, 2026)</p>
       </div>
 <style is:global>
   .legend-icon {
