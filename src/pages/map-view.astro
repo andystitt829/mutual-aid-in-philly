@@ -74,7 +74,7 @@ return `<h4 class="text-lg/5">${site.data.Name}</h4>
                   <Overlay name={layer.name}/>
 
                   {layer.data.map(site => (
-                  <Marker latlng={[site.data.Latitude, site.data.Longitude]} options={{alt: site.data.Name}} astroIconName={iconType(site.data['Primary Resource'])}>
+                  <Marker latlng={[site.data.Latitude, site.data.Longitude]} options={{title: site.data.Name}} astroIconName={iconType(site.data['Primary Resource'])}>
                     <Popup content={popupContent(site)}/>
                   </Marker>
                   ))}
