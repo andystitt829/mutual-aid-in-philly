@@ -2,10 +2,15 @@
 import DefaultLayout from '@layouts/DefaultLayout.astro';
 import Search from "astro-pagefind/components/Search";
 import { getCollection } from "astro:content";
+//import { Icon } from 'astro-icon/components'
+import { Button } from 'accessible-astro-components';
 
 const sites = await getCollection("sites", ({ data }) => {
   return data.Active == true;
 });
+
+const regions = [...new Set(sites.map(site => site.data.Region))].sort();
+
 ---
 
 <DefaultLayout title="List View">
@@ -13,24 +18,78 @@ const sites = await getCollection("sites", ({ data }) => {
         <h1 class="mb-10">List View</h1>
         <p class="text-2xl mb-15">Use the list and search bar below to find mutual aid near you.</p>
         <Search id="search" className="mt-15" uiOptions={{ showImages: false }} />
+
+        <div id="filter-list" class="mt-5">
+            <details>
+                <summary><b>Filters</b></summary>
+                <div class="flex gap-3 flex-wrap mt-5 items-center">
+                    Regions: 
+                    {
+                        regions.map(region => 
+                            <Button 
+                                size='sm' 
+                                type="primary" 
+                                data={region}
+                                class="filter-region"
+                            >{region}
+                            </Button> )
+                    }
+                </div>
+
+                <div class="flex gap-3 flex-wrap mt-5 items-center">
+                    Resource type: 
+                    <Button size='sm' type="secondary" class='filter-food' data-food="true">Food</Button>
+                    <Button size='sm' type="secondary" class='filter-food' data-food="false">Non-food</Button>
+                </div>
+            </details>
+        </div>
+
+        <script>
+            const regionButtons = Array.from(document.querySelectorAll(".button.filter-region"));
+
+            function toggieWoggie(btn, classToggle, query) {
+                btn.classList.toggle(classToggle);
+                const rows = Array.from(document.querySelectorAll(query));
+                for (let row of rows) {
+                    row.classList.toggle('collapse');
+                }
+            }
+
+            for (let btn of regionButtons) {
+                const nm = btn.getAttribute('data');
+                btn.addEventListener("click", () => toggieWoggie(btn, "type-primary", "tr[data-region='"+nm+"']"))
+            };
+
+            const foodOnlyButton = document.querySelector("button[data-food='true']");
+            foodOnlyButton.addEventListener("click", () => toggieWoggie(foodOnlyButton, "type-secondary", "tr[data-food='true'"));
+
+            const nonFoodOnlyButton = document.querySelector("button[data-food='false']");
+            nonFoodOnlyButton.addEventListener("click", () => toggieWoggie(nonFoodOnlyButton, "type-secondary", "tr[data-food='false'"));
+        </script>
+
         <div class="overflow-x-auto">
         <table data-pagefind-body id="listView" class="table-auto mt-10">
             <thead>
                 <th scope="col" class="border border-gray-500">Name</th>
+                <th scope="col" class="border border-gray-500">Resources</th>
                 <th scope="col" class="border border-gray-500">Description</th>
                 <th scope="col" class="border border-gray-500">Days and Times</th>
                 <th scope="col" class="border border-gray-500">Address</th>
-                <th scope="col" class="border border-gray-500">Zip Code</th>
+                <!-- <th scope="col" class="border border-gray-500">Zip Code</th> -->
             </thead>
             <tbody>
                 {
-                sites.map((site) => (
-                    <tr>
+                sites
+                .sort((a, b) => a.data.ID - b.data.ID)
+                .map((site) => (
+                    <tr data-id={site.data.ID} data-region={site.data.Region} data-food={site.data.Food == true}>
                         <td class="border border-gray-500 p-3">{site.data.Name}</td>
+                        <td class="border border-gray-500 p-3">{site.data['All Resources (New)'].join(", ")}</td>
                         <td class="border border-gray-500 p-3">{site.data.Description}</td>
                         <td class="border border-gray-500 p-3">{site.data['Days and Times']}</td>
-                        <td class="border border-gray-500 p-3">{site.data.Address}</td>
-                        <td class="border border-gray-500 p-3">{site.data.ZIP}</td>
+                        <td class="border border-gray-500 p-3">{site.data.Address}, {site.data.ZIP}<br>
+                        <a href=${'https://www.google.com/maps/search/?api=1&query='+String(site.data.Latitude)+"+"+String(site.data.Longitude)}><span class='sr-only'>${site.data.Address} </span>Google Maps</a></td>
+                        {/* <td class="border border-gray-500 p-3">{site.data.ZIP}</td> */}
                     </tr>
                 ))
                 }
