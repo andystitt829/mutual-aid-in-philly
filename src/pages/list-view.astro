@@ -2,7 +2,7 @@
 import DefaultLayout from '@layouts/DefaultLayout.astro';
 import Search from "astro-pagefind/components/Search";
 import { getCollection } from "astro:content";
-//import { Icon } from 'astro-icon/components'
+import { Icon } from 'astro-icon/components'
 import { Button } from 'accessible-astro-components';
 
 const sites = await getCollection("sites", ({ data }) => {
@@ -21,50 +21,139 @@ const regions = [...new Set(sites.map(site => site.data.Region))].sort();
 
         <div id="filter-list" class="mt-5">
             <details>
-                <summary><b>Filters</b></summary>
+                <summary><b>Filter by region and resource</b></summary>
                 <div class="flex gap-3 flex-wrap mt-5 items-center">
                     Regions: 
+                    <Button
+                        size='sm'
+                        class='filter-region-select-all'
+                        disabled=true
+                    ><em>Select all</em>
+                    <Icon name="lucide:check"/>
+                    </Button>
                     {
                         regions.map(region => 
                             <Button 
                                 size='sm' 
                                 type="primary" 
-                                data={region}
+                                data-region={region}
                                 class="filter-region"
                             >{region}
+                            <Icon name="lucide:check"/>
+                            <Icon name="lucide:x" style="display: none"/>
                             </Button> )
                     }
                 </div>
 
                 <div class="flex gap-3 flex-wrap mt-5 items-center">
-                    Resource type: 
-                    <Button size='sm' type="secondary" class='filter-food' data-food="true">Food</Button>
-                    <Button size='sm' type="secondary" class='filter-food' data-food="false">Non-food</Button>
+                    Primary resource: 
+                    <Button 
+                        size='sm' 
+                        type="secondary" 
+                        class='filter-food' 
+                        data-food="true">
+                        Food
+                        <Icon name="lucide:check"/>
+                        <Icon name="lucide:x" style="display: none"/>
+                    </Button>
+                    <Button
+                        size='sm'
+                        type="secondary"
+                        class='filter-food'
+                        data-food="false">
+                        Non-food
+                        <Icon name="lucide:check"/>
+                        <Icon name="lucide:x" style="display: none"/>
+                    </Button>
                 </div>
             </details>
         </div>
 
         <script>
-            const regionButtons = Array.from(document.querySelectorAll(".button.filter-region"));
-
-            function toggieWoggie(btn, classToggle, query) {
-                btn.classList.toggle(classToggle);
-                const rows = Array.from(document.querySelectorAll(query));
-                for (let row of rows) {
-                    row.classList.toggle('collapse');
+            function toggleCheck(check: HTMLElement, ecks: HTMLElement, activated: boolean) {
+                if (activated) {
+                    check.style = "display: none";
+                    ecks.style = "";
+                } else {
+                    check.style = "";
+                    ecks.style = "display: none"
                 }
             }
 
+            function hoverWuver(btn: HTMLElement, type: string, mouseout = false) {
+                const activated = btn.classList.contains(type);
+                const check = btn.querySelector("svg[data-icon='lucide:check']");
+                const ecks = btn.querySelector("svg[data-icon='lucide:x']");
+
+                mouseout ? toggleCheck(check, ecks, !activated) : toggleCheck(check, ecks, activated);
+
+            }
+
+            function toggieWoggie(btn: HTMLElement, classToggle: string, query: string, toggledBy: string) {
+                btn.classList.toggle(classToggle);
+                const rows = Array.from(document.querySelectorAll(query));
+                for (let row of rows) {
+                    row.classList.toggle("off-" + toggledBy);
+                }
+            }
+
+            function toggleSelectAll(selectAllBtn: HTMLElement, classToggle: string, arrayBtns: HTMLElement[]) {
+                const buttonsOn = arrayBtns.filter((arrayBtn: HTMLElement) => arrayBtn.classList.contains(classToggle));
+
+                if (buttonsOn.length == arrayBtns.length) {
+                    selectAllBtn.disabled = true;
+                    selectAllBtn.classList.remove(classToggle)
+                } else {
+                    selectAllBtn.disabled = false;
+                    selectAllBtn.classList.add(classToggle);
+                }
+            }
+
+            function selectAll(selectAllBtn: HTMLElement, arrayBtns: HTMLElement[], classToggle: string, toggledBy: string) {
+                if (!selectAllBtn.disabled) {
+                    for (let btn of arrayBtns) {
+                        if (!btn.classList.contains(classToggle)) {
+                            let query = "";
+                            if (toggledBy == "region") {
+                                const nm = btn.getAttribute('data');
+                                query = "tr[data-region='"+nm+"']"
+                            } else if (toggledBy == "food") {
+                                query = "tr[data-food='true']"
+                            } else if (toggledBy == "nonfood") {
+                                query = "tr[data-food='false']"
+                            }
+                            toggieWoggie(btn, classToggle, query, toggledBy)
+                        }
+                    }
+                    toggleSelectAll(selectAllBtn, classToggle, arrayBtns);
+                }
+            }
+
+            const regionButtons = Array.from(document.querySelectorAll(".button.filter-region"));
+            const regionSelectAllButton = document.querySelector(".button.filter-region-select-all");
+
             for (let btn of regionButtons) {
-                const nm = btn.getAttribute('data');
-                btn.addEventListener("click", () => toggieWoggie(btn, "type-primary", "tr[data-region='"+nm+"']"))
+                const nm = btn.getAttribute('data-region');
+                btn.addEventListener("click", () => {
+                    toggieWoggie(btn, "type-primary", "tr[data-region='"+nm+"']", "region");
+                    toggleSelectAll(regionSelectAllButton, 'type-primary', regionButtons)
+                });
+                btn.addEventListener("mouseover", () => hoverWuver(btn, "type-primary"));
+                btn.addEventListener("mouseout", () => hoverWuver(btn, "type-primary", true));
             };
 
+            regionSelectAllButton.addEventListener("click", () => selectAll(regionSelectAllButton, regionButtons, "type-primary", "region"));
+
             const foodOnlyButton = document.querySelector("button[data-food='true']");
-            foodOnlyButton.addEventListener("click", () => toggieWoggie(foodOnlyButton, "type-secondary", "tr[data-food='true'"));
+            foodOnlyButton.addEventListener("click", () => toggieWoggie(foodOnlyButton, "type-secondary", "tr[data-food='true']", "food"));
 
             const nonFoodOnlyButton = document.querySelector("button[data-food='false']");
-            nonFoodOnlyButton.addEventListener("click", () => toggieWoggie(nonFoodOnlyButton, "type-secondary", "tr[data-food='false'"));
+            nonFoodOnlyButton.addEventListener("click", () => toggieWoggie(nonFoodOnlyButton, "type-secondary", "tr[data-food='false']", "nonfood"));
+
+            for (let btn of [foodOnlyButton, nonFoodOnlyButton]) {
+                btn.addEventListener("mouseover", () => hoverWuver(btn, "type-secondary"));
+                btn.addEventListener("mouseout", () => hoverWuver(btn, "type-secondary", true));
+            }
         </script>
 
         <div class="overflow-x-auto">
@@ -82,7 +171,7 @@ const regions = [...new Set(sites.map(site => site.data.Region))].sort();
                 sites
                 .sort((a, b) => a.data.ID - b.data.ID)
                 .map((site) => (
-                    <tr data-id={site.data.ID} data-region={site.data.Region} data-food={site.data.Food == true}>
+                    <tr data-region={site.data.Region} data-food={site.data.Food == true}>
                         <td class="border border-gray-500 p-3">{site.data.Name}</td>
                         <td class="border border-gray-500 p-3">{site.data['All Resources (New)'].join(", ")}</td>
                         <td class="border border-gray-500 p-3">{site.data.Description}</td>
@@ -102,5 +191,14 @@ const regions = [...new Set(sites.map(site => site.data.Region))].sort();
 <style>
     :root {
         --pagefind-ui-border: #adb5bd;
+    }
+    .off-food {
+        display: none;
+    }
+    .off-region {
+        display: none;
+    }
+    .off-nonfood {
+        display: none;
     }
 </style>
