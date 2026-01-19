@@ -38,6 +38,7 @@ const regions = [...new Set(sites.map(site => site.data.Region))].sort();
                                 type="primary" 
                                 data-region={region}
                                 class="filter-region"
+                                aria-expanded="true"
                             >{region}
                             <Icon name="lucide:check"/>
                             <Icon name="lucide:x" style="display: none"/>
@@ -51,7 +52,9 @@ const regions = [...new Set(sites.map(site => site.data.Region))].sort();
                         size='sm' 
                         type="secondary" 
                         class='filter-food' 
-                        data-food="true">
+                        data-food="true"
+                        aria-expanded="true"
+                    >
                         Food
                         <Icon name="lucide:check"/>
                         <Icon name="lucide:x" style="display: none"/>
@@ -60,7 +63,9 @@ const regions = [...new Set(sites.map(site => site.data.Region))].sort();
                         size='sm'
                         type="secondary"
                         class='filter-food'
-                        data-food="false">
+                        data-nonfood="true"
+                        aria-expanded="true"
+                    >
                         Non-food
                         <Icon name="lucide:check"/>
                         <Icon name="lucide:x" style="display: none"/>
@@ -91,6 +96,7 @@ const regions = [...new Set(sites.map(site => site.data.Region))].sort();
 
             function toggieWoggie(btn: HTMLElement, classToggle: string, query: string, toggledBy: string) {
                 btn.classList.toggle(classToggle);
+                btn.ariaExpanded = String(!Boolean(btn.ariaExpanded));
                 const rows = Array.from(document.querySelectorAll(query));
                 for (let row of rows) {
                     row.classList.toggle("off-" + toggledBy);
@@ -181,7 +187,7 @@ const regions = [...new Set(sites.map(site => site.data.Region))].sort();
                         <td class="border border-gray-500 p-3">{site.data.Description}</td>
                         <td class="border border-gray-500 p-3">{site.data['Days and Times']}</td>
                         <td class="border border-gray-500 p-3">{site.data.Address}, {site.data.ZIP}<br>
-                        <a href={`https://www.google.com/maps/search/?api=1&query=${String(site.data.Latitude)}+${String(site.data.Longitude)}`}><span class='sr-only'>${site.data.Address} </span>Google Maps</a></td>
+                        <a href={`https://www.google.com/maps/search/?api=1&query=${String(site.data.Latitude)}+${String(site.data.Longitude)}`}><span class='sr-only'>{site.data.Address} </span>Google Maps</a></td>
                         {/* <td class="border border-gray-500 p-3">{site.data.ZIP}</td> */}
                     </tr>
                 ))
