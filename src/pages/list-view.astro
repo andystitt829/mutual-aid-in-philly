@@ -46,7 +46,7 @@ const regions = [...new Set(sites.map(site => site.data.Region))].sort();
                 </div>
 
                 <div class="flex gap-3 flex-wrap mt-5 items-center">
-                    Primary resource: 
+                    Has: 
                     <Button 
                         size='sm' 
                         type="secondary" 
@@ -148,7 +148,7 @@ const regions = [...new Set(sites.map(site => site.data.Region))].sort();
             foodOnlyButton.addEventListener("click", () => toggieWoggie(foodOnlyButton, "type-secondary", "tr[data-food='true']", "food"));
 
             const nonFoodOnlyButton = document.querySelector("button[data-food='false']");
-            nonFoodOnlyButton.addEventListener("click", () => toggieWoggie(nonFoodOnlyButton, "type-secondary", "tr[data-food='false']", "nonfood"));
+            nonFoodOnlyButton.addEventListener("click", () => toggieWoggie(nonFoodOnlyButton, "type-secondary", "tr[data-nonfood='true']", "nonfood"));
 
             for (let btn of [foodOnlyButton, nonFoodOnlyButton]) {
                 btn.addEventListener("mouseover", () => hoverWuver(btn, "type-secondary"));
@@ -171,7 +171,11 @@ const regions = [...new Set(sites.map(site => site.data.Region))].sort();
                 sites
                 .sort((a, b) => a.data.ID - b.data.ID)
                 .map((site) => (
-                    <tr data-region={site.data.Region} data-food={site.data.Food == true}>
+                    <tr 
+                        data-region={site.data.Region}
+                        data-food={site.data['All Resources (New)'].some(resource => ['Distro', 'Fridge', 'Free table', 'Meals'].includes(resource))}
+                        data-nonfood={site.data['All Resources (New)'].some(resource => !['Distro', 'Fridge', 'Free table', 'Meals'].includes(resource))}
+                    >
                         <td class="border border-gray-500 p-3">{site.data.Name}</td>
                         <td class="border border-gray-500 p-3">{site.data['All Resources (New)'].join(", ")}</td>
                         <td class="border border-gray-500 p-3">{site.data.Description}</td>
@@ -192,13 +196,16 @@ const regions = [...new Set(sites.map(site => site.data.Region))].sort();
     :root {
         --pagefind-ui-border: #adb5bd;
     }
-    .off-food {
+    .off-food[data-food='true']:not([data-nonfood='true']) {
         display: none;
     }
     .off-region {
         display: none;
     }
-    .off-nonfood {
+    .off-nonfood[data-nonfood='true']:not([data-food='true']) {
+        display: none;
+    }
+    [data-food='true'][data-nonfood='true'].off-food.off-nonfood {
         display: none;
     }
 </style>
