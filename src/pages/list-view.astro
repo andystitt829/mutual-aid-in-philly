@@ -96,7 +96,8 @@ const regions = [...new Set(sites.map(site => site.data.Region))].sort();
 
             function toggieWoggie(btn: HTMLElement, classToggle: string, query: string, toggledBy: string) {
                 btn.classList.toggle(classToggle);
-                btn.ariaExpanded = String(!Boolean(btn.ariaExpanded));
+                console.log(btn.ariaExpanded);
+                btn.ariaExpanded = String(btn.ariaExpanded != "true");
                 const rows = Array.from(document.querySelectorAll(query));
                 for (let row of rows) {
                     row.classList.toggle("off-" + toggledBy);
@@ -153,7 +154,7 @@ const regions = [...new Set(sites.map(site => site.data.Region))].sort();
             const foodOnlyButton = document.querySelector("button[data-food='true']");
             foodOnlyButton.addEventListener("click", () => toggieWoggie(foodOnlyButton, "type-secondary", "tr[data-food='true']", "food"));
 
-            const nonFoodOnlyButton = document.querySelector("button[data-food='false']");
+            const nonFoodOnlyButton = document.querySelector("button[data-nonfood='true']");
             nonFoodOnlyButton.addEventListener("click", () => toggieWoggie(nonFoodOnlyButton, "type-secondary", "tr[data-nonfood='true']", "nonfood"));
 
             for (let btn of [foodOnlyButton, nonFoodOnlyButton]) {
