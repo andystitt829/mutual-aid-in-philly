@@ -188,11 +188,7 @@ const regions = [...new Set(sites.map(site => site.data.Region))].sort();
                         <td class="border border-gray-500 p-3">{site.data.Description}</td>
                         <td class="border border-gray-500 p-3">{site.data['Days and Times']}</td>
                         <td class="border border-gray-500 p-3">{site.data.Address}, {site.data.ZIP}<br>
-<<<<<<< HEAD
-                        <a href={'https://www.google.com/maps/search/?api=1&query='+String(site.data.Latitude)+"+"+String(site.data.Longitude)}><span class='sr-only'>View {site.data.Address} in </span>Google Maps</a></td>
-=======
                         <a href={`https://www.google.com/maps/search/?api=1&query=${String(site.data.Latitude)}+${String(site.data.Longitude)}`}><span class='sr-only'>{site.data.Address} </span>Google Maps</a></td>
->>>>>>> 00c66af50dfad365cfeaf6d216aeaf47bd1cc4a0
                         {/* <td class="border border-gray-500 p-3">{site.data.ZIP}</td> */}
                     </tr>
                 ))
