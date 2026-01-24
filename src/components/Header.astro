@@ -19,37 +19,8 @@ import { Icon } from 'astro-icon/components'
     <li class="menu-item">
       <Link href="/map-view/">Map View</Link>
     </li>
-    <li class="menu-item has-dropdown">
-      <button aria-haspopup="true" aria-expanded="false">
-        List View by Neighborhood
-        <Icon aria-hidden="true" name="lucide:chevron-down" size="32" />
-      </button>
-      <ul class="dropdown-menu">
-        <li class="submenu-item">
-          <Link href="/list-view-center-city/">Center City</Link>
-        </li>
-        <li class="submenu-item">
-          <Link href="/list-view-north/">North Philly</Link>
-        </li>
-        <li class="submenu-item">
-          <Link href="/list-view-northeast/">Northeast Philly</Link>
-        </li>
-        <li class="submenu-item">
-          <Link href="/list-view-northwest/">Northwest Philly</Link>
-        </li>
-        <li class="submenu-item">
-          <Link href="/list-view-south/">South Philly</Link>
-        </li>
-        <li class="submenu-item">
-          <Link href="/list-view-southwest/">Southwest Philly</Link>
-        </li>
-        <li class="submenu-item">
-          <Link href="/list-view-west/">West Philly</Link>
-        </li>
-        <li class="submenu-item">
-          <Link href="/list-view/">View full list</Link>
-        </li>
-      </ul>
+    <li class="menu-item">
+      <Link href="/list-view/">List View</Link>
     </li>
     <li class="menu-item">
       <Link href="/contact/">Contact</Link>
