@@ -2,10 +2,15 @@
 import DefaultLayout from '@layouts/DefaultLayout.astro';
 import Search from "astro-pagefind/components/Search";
 import { getCollection } from "astro:content";
+import { Icon } from 'astro-icon/components'
+import { Button } from 'accessible-astro-components';
 
 const sites = await getCollection("sites", ({ data }) => {
   return data.Active == true;
 });
+
+const regions = [...new Set(sites.map(site => site.data.Region))].sort();
+
 ---
 
 <DefaultLayout title="List View">
@@ -13,24 +18,178 @@ const sites = await getCollection("sites", ({ data }) => {
         <h1 class="mb-10">List View</h1>
         <p class="text-2xl mb-15">Use the list and search bar below to find mutual aid near you.</p>
         <Search id="search" className="mt-15" uiOptions={{ showImages: false }} />
+
+        <div id="filter-list" class="mt-5">
+            <details>
+                <summary><b>Filter by region and resource</b></summary>
+                <div class="flex gap-3 flex-wrap mt-5 items-center">
+                    Regions: 
+                    <Button
+                        size='sm'
+                        class='filter-region-select-all'
+                        disabled=true
+                    ><em>Select all</em>
+                    <Icon name="lucide:check"/>
+                    </Button>
+                    {
+                        regions.map(region => 
+                            <Button 
+                                size='sm' 
+                                type="primary" 
+                                data-region={region}
+                                class="filter-region"
+                                aria-expanded="true"
+                            >{region}
+                            <Icon name="lucide:check"/>
+                            <Icon name="lucide:x" style="display: none"/>
+                            </Button> )
+                    }
+                </div>
+
+                <div class="flex gap-3 flex-wrap mt-5 items-center">
+                    Has: 
+                    <Button 
+                        size='sm' 
+                        type="secondary" 
+                        class='filter-food' 
+                        data-food="true"
+                        aria-expanded="true"
+                    >
+                        Food
+                        <Icon name="lucide:check"/>
+                        <Icon name="lucide:x" style="display: none"/>
+                    </Button>
+                    <Button
+                        size='sm'
+                        type="secondary"
+                        class='filter-food'
+                        data-nonfood="true"
+                        aria-expanded="true"
+                    >
+                        Non-food
+                        <Icon name="lucide:check"/>
+                        <Icon name="lucide:x" style="display: none"/>
+                    </Button>
+                </div>
+            </details>
+        </div>
+
+        <script>
+            function toggleCheck(check: HTMLElement, ecks: HTMLElement, activated: boolean) {
+                if (activated) {
+                    check.style = "display: none";
+                    ecks.style = "";
+                } else {
+                    check.style = "";
+                    ecks.style = "display: none"
+                }
+            }
+
+            function hoverWuver(btn: HTMLElement, type: string, mouseout = false) {
+                const activated = btn.classList.contains(type);
+                const check = btn.querySelector("svg[data-icon='lucide:check']");
+                const ecks = btn.querySelector("svg[data-icon='lucide:x']");
+
+                mouseout ? toggleCheck(check, ecks, !activated) : toggleCheck(check, ecks, activated);
+
+            }
+
+            function toggieWoggie(btn: HTMLElement, classToggle: string, query: string, toggledBy: string) {
+                btn.classList.toggle(classToggle);
+                console.log(btn.ariaExpanded);
+                btn.ariaExpanded = String(btn.ariaExpanded != "true");
+                const rows = Array.from(document.querySelectorAll(query));
+                for (let row of rows) {
+                    row.classList.toggle("off-" + toggledBy);
+                }
+            }
+
+            function toggleSelectAll(selectAllBtn: HTMLElement, classToggle: string, arrayBtns: HTMLElement[]) {
+                const buttonsOn = arrayBtns.filter((arrayBtn: HTMLElement) => arrayBtn.classList.contains(classToggle));
+
+                if (buttonsOn.length == arrayBtns.length) {
+                    selectAllBtn.disabled = true;
+                    selectAllBtn.classList.remove(classToggle)
+                } else {
+                    selectAllBtn.disabled = false;
+                    selectAllBtn.classList.add(classToggle);
+                }
+            }
+
+            function selectAll(selectAllBtn: HTMLElement, arrayBtns: HTMLElement[], classToggle: string, toggledBy: string) {
+                if (!selectAllBtn.disabled) {
+                    for (let btn of arrayBtns) {
+                        if (!btn.classList.contains(classToggle)) {
+                            let query = "";
+                            if (toggledBy == "region") {
+                                const nm = btn.getAttribute('data');
+                                query = "tr[data-region='"+nm+"']"
+                            } else if (toggledBy == "food") {
+                                query = "tr[data-food='true']"
+                            } else if (toggledBy == "nonfood") {
+                                query = "tr[data-food='false']"
+                            }
+                            toggieWoggie(btn, classToggle, query, toggledBy)
+                        }
+                    }
+                    toggleSelectAll(selectAllBtn, classToggle, arrayBtns);
+                }
+            }
+
+            const regionButtons = Array.from(document.querySelectorAll(".button.filter-region"));
+            const regionSelectAllButton = document.querySelector(".button.filter-region-select-all");
+
+            for (let btn of regionButtons) {
+                const nm = btn.getAttribute('data-region');
+                btn.addEventListener("click", () => {
+                    toggieWoggie(btn, "type-primary", "tr[data-region='"+nm+"']", "region");
+                    toggleSelectAll(regionSelectAllButton, 'type-primary', regionButtons)
+                });
+                btn.addEventListener("mouseover", () => hoverWuver(btn, "type-primary"));
+                btn.addEventListener("mouseout", () => hoverWuver(btn, "type-primary", true));
+            };
+
+            regionSelectAllButton.addEventListener("click", () => selectAll(regionSelectAllButton, regionButtons, "type-primary", "region"));
+
+            const foodOnlyButton = document.querySelector("button[data-food='true']");
+            foodOnlyButton.addEventListener("click", () => toggieWoggie(foodOnlyButton, "type-secondary", "tr[data-food='true']", "food"));
+
+            const nonFoodOnlyButton = document.querySelector("button[data-nonfood='true']");
+            nonFoodOnlyButton.addEventListener("click", () => toggieWoggie(nonFoodOnlyButton, "type-secondary", "tr[data-nonfood='true']", "nonfood"));
+
+            for (let btn of [foodOnlyButton, nonFoodOnlyButton]) {
+                btn.addEventListener("mouseover", () => hoverWuver(btn, "type-secondary"));
+                btn.addEventListener("mouseout", () => hoverWuver(btn, "type-secondary", true));
+            }
+        </script>
+
         <div class="overflow-x-auto">
         <table data-pagefind-body id="listView" class="table-auto mt-10">
             <thead>
                 <th scope="col" class="border border-gray-500">Name</th>
+                <th scope="col" class="border border-gray-500">Resources</th>
                 <th scope="col" class="border border-gray-500">Description</th>
                 <th scope="col" class="border border-gray-500">Days and Times</th>
                 <th scope="col" class="border border-gray-500">Address</th>
-                <th scope="col" class="border border-gray-500">Zip Code</th>
+                <!-- <th scope="col" class="border border-gray-500">Zip Code</th> -->
             </thead>
             <tbody>
                 {
-                sites.map((site) => (
-                    <tr>
+                sites
+                .sort((a, b) => a.data.ID - b.data.ID)
+                .map((site) => (
+                    <tr 
+                        data-region={site.data.Region}
+                        data-food={site.data['All Resources (New)'].some(resource => ['Distro', 'Fridge', 'Free table', 'Meals'].includes(resource))}
+                        data-nonfood={site.data['All Resources (New)'].some(resource => !['Distro', 'Fridge', 'Free table', 'Meals'].includes(resource))}
+                    >
                         <td class="border border-gray-500 p-3">{site.data.Name}</td>
+                        <td class="border border-gray-500 p-3">{site.data['All Resources (New)'].join(", ")}</td>
                         <td class="border border-gray-500 p-3">{site.data.Description}</td>
                         <td class="border border-gray-500 p-3">{site.data['Days and Times']}</td>
-                        <td class="border border-gray-500 p-3">{site.data.Address}</td>
-                        <td class="border border-gray-500 p-3">{site.data.ZIP}</td>
+                        <td class="border border-gray-500 p-3">{site.data.Address}, {site.data.ZIP}<br>
+                        <a href={`https://www.google.com/maps/search/?api=1&query=${String(site.data.Latitude)}+${String(site.data.Longitude)}`}><span class='sr-only'>View {site.data.Address} in </span>Google Maps</a></td>
+                        {/* <td class="border border-gray-500 p-3">{site.data.ZIP}</td> */}
                     </tr>
                 ))
                 }
@@ -43,5 +202,17 @@ const sites = await getCollection("sites", ({ data }) => {
 <style>
     :root {
         --pagefind-ui-border: #adb5bd;
+    }
+    .off-food[data-food='true']:not([data-nonfood='true']) {
+        display: none;
+    }
+    .off-region {
+        display: none;
+    }
+    .off-nonfood[data-nonfood='true']:not([data-food='true']) {
+        display: none;
+    }
+    [data-food='true'][data-nonfood='true'].off-food.off-nonfood {
+        display: none;
     }
 </style>
